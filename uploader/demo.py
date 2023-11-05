@@ -11,7 +11,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
-    dcc.Store(id='storage', storage_type='session'),
+    dcc.Store(id='storage', storage_type='memory'),
     dcc.Upload(
         id='upload-data',
         children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
