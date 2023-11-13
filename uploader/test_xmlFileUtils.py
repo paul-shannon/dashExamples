@@ -73,7 +73,8 @@ def test_validateXML():
    contents = createBase64EncodedStringFromEAFfile(fullPath)
    projectDirectory = "tmp"
    utils = XmlFileUtils(fullPath, projectDirectory, contents, verbose=True)
-   utils.saveBytesToFile()
+   localFile = utils.saveBytesToFile()
+   assert(localFile == 'tmp/inferno-threeLines.eaf')
 
    result = utils.validElanXML()
    assert(result["valid"] == True)

@@ -24,6 +24,7 @@ class XmlFileUtils:
        data = self.base64bytes.encode("utf8").split(b";base64,")[1]
        with open(self.localFilename, "wb") as fp:
           fp.write(base64.decodebytes(data))
+       return(self.localFilename)
 
     def getLocalFilename(self):
        return(self.localFilename)

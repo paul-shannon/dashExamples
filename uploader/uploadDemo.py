@@ -1,6 +1,7 @@
 from dash import Dash, dcc, html, dash_table, Input, Output, State, callback
+from dash.exceptions import PreventUpdate
 
-import xmlFileUtils
+from xmlFileUtils import XmlFileUtils
 
 import base64
 import datetime
@@ -24,31 +25,36 @@ app.layout = html.Div([
         children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
         multiple=False
         ),
-    html.Div(id='messageDiv', children=[html.H4("messages")], style=messageDivStyle)
+    html.Div(id='messageDiv', children=[html.H5("messageDiv")], style=messageDivStyle)
     ])
 
-@callback(Output('messageDiv', 'children', allow_duplicate=True),
-          Input('uploaderWidget', 'filename'),
-          State('uploaderWidget', 'contents'),
-          State('uploaderWidget', 'last_modified'),
-          State('messageDiv', 'children'),
-          prevent_initial_call=True)
+@app.callback(Output('messageDiv', 'children'),
+              [Input('uploaderWidget', 'filename')],
+              State('uploaderWidget', 'contents'),
+              State('uploaderWidget', 'last_modified'),
+              State('messageDiv', 'children'))
 def uploadHandler(filename, content, date, divContents):
+  if(content == None):
+     raise PreventUpdate
   print(filename)
   print(date)
   print(len(content))
-  xmlUtils = xmlFileUtils(filename, "tmp", content, verbose=True)
+  print(divContents)
+  xmlUtils = XmlFileUtils(filename, "tmp", content, verbose=True)
   xmlUtils.saveBytesToFile()
-  validEAF = xmlUtils.validateEAF()
+  result = xmlUtils.validElanXML()
   formattedDate = datetime.datetime.fromtimestamp(date).strftime('%Y-%m-%d %H:%M:%S')
-  el = html.H4("fubar")
-  el = html.Ul(id='list',
-               children=[html.Li(filename),
-                         html.Li(formattedDate),
-                         html.Li(len(content)),
-                         html.Li("valid: %s" % validEAF)])
-  divContents += [el]
-  return divContents
+  divContents += [html.H4(formattedDate)]
+  print(divContents)
+  return(divContents)
+  #el = html.H4("fubar")
+  #el = html.Ul(id='list',
+  #             children=[html.Li(filename),
+  #                       html.Li(formattedDate),
+  #                       html.Li(len(content)),
+  #                       html.Li("valid: %s" % validEAF)])
+  #divContents += [el]
+  #return divContents
 
 if __name__ == '__main__':
     app.run(debug=True)
